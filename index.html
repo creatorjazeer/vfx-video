@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VFX Video Generator - Create Hollywood-Style Product Videos</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 32px;
+        }
+        
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 16px;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 15px;
+            transition: border-color 0.3s;
+            font-family: inherit;
+        }
+        
+        input[type="text"]:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        .file-upload {
+            border: 3px dashed #e0e0e0;
+            border-radius: 10px;
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+        
+        .file-upload:hover {
+            border-color: #667eea;
+            background: #f8f9ff;
+        }
+        
+        .file-upload.dragover {
+            border-color: #667eea;
+            background: #f0f3ff;
+        }
+        
+        input[type="file"] {
+            display: none;
+        }
+        
+        .upload-icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+        
+        .preview-container {
+            margin-top: 15px;
+            display: none;
+        }
+        
+        .preview-image {
+            max-width: 100%;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .btn-submit {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .btn-submit:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-submit:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 30px;
+            padding: 30px;
+            background: #f8f9ff;
+            border-radius: 10px;
+        }
+        
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .result {
+            display: none;
+            margin-top: 30px;
+            padding: 20px;
+            background: #f0f9ff;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .result h3 {
+            margin-bottom: 10px;
+            color: #333;
+        }
+        
+        .result p {
+            color: #666;
+            margin-bottom: 10px;
+            line-height: 1.6;
+        }
+        
+        .result.error {
+            background: #fff0f0;
+            border-left-color: #ef4444;
+        }
+        
+        .result.success {
+            background: #f0fdf4;
+            border-left-color: #10b981;
+        }
+        
+        .video-link {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 12px 24px;
+            background: #667eea;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+        
+        .video-link:hover {
+            background: #5568d3;
+        }
+        
+        .progress-text {
+            color: #667eea;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+
+        @media (max-width: 640px) {
+            .container {
+                padding: 30px 20px;
+            }
+            
+            h1 {
+                font-size: 24px;
+            }
+            
+            .subtitle {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎬 VFX Video Generator</h1>
+        <p class="subtitle">Create stunning Hollywood-style product videos with AI</p>
+        
+        <form id="vfxForm">
+            <div class="form-group">
+                <label>Product Image *</label>
+                <div class="file-upload" id="fileUpload">
+                    <input type="file" id="productImage" accept="image/*" required>
+                    <div class="upload-icon">📸</div>
+                    <p><strong>Click to upload</strong> or drag and drop</p>
+                    <p style="color: #999; font-size: 13px; margin-top: 5px;">PNG, JPG up to 10MB</p>
+                </div>
+                <div class="preview-container" id="previewContainer">
+                    <img class="preview-image" id="previewImage" alt="Preview">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="businessName">Product/Business Name *</label>
+                <input type="text" id="businessName" placeholder="e.g., Chocolate Chip Cookies" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="businessDescription">Business Description *</label>
+                <textarea id="businessDescription" placeholder="Describe what you sell, key offering, unique selling point" required></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="videoIdea">Video Idea (Optional)</label>
+                <textarea id="videoIdea" placeholder="Describe how you want the video ad to look (e.g., cinematic reveal, ingredient explosion, slow motion assembly)"></textarea>
+            </div>
+            
+            <button type="submit" class="btn-submit" id="submitBtn">
+                🚀 Generate VFX Video
+            </button>
+        </form>
+        
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p class="progress-text">Creating your Hollywood-style video...</p>
+            <p style="color: #999; margin-top: 10px;">This may take 2-3 minutes</p>
+            <p style="color: #999; font-size: 13px; margin-top: 5px;">Please don't close this window</p>
+        </div>
+        
+        <div class="result" id="result"></div>
+    </div>
+
+    <script>
+        // ⚠️ IMPORTANT: Replace this with your actual n8n webhook URL
+        const N8N_WEBHOOK_URL = 'https://creatorjazeer.n8n-wsk.com/webhook/vfx-video-webhook';
+        
+        // DOM Elements
+        const form = document.getElementById('vfxForm');
+        const fileUpload = document.getElementById('fileUpload');
+        const fileInput = document.getElementById('productImage');
+        const previewContainer = document.getElementById('previewContainer');
+        const previewImage = document.getElementById('previewImage');
+        const loading = document.getElementById('loading');
+        const result = document.getElementById('result');
+        const submitBtn = document.getElementById('submitBtn');
+        
+        // File Upload Handling
+        fileUpload.addEventListener('click', () => fileInput.click());
+        
+        fileUpload.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            fileUpload.classList.add('dragover');
+        });
+        
+        fileUpload.addEventListener('dragleave', () => {
+            fileUpload.classList.remove('dragover');
+        });
+        
+        fileUpload.addEventListener('drop', (e) => {
+            e.preventDefault();
+            fileUpload.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                fileInput.files = files;
+                previewFile(files[0]);
+            }
+        });
+        
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                previewFile(e.target.files[0]);
+            }
+        });
+        
+        function previewFile(file) {
+            // Validate file size (10MB max)
+            if (file.size > 10 * 1024 * 1024) {
+                alert('File size must be less than 10MB');
+                return;
+            }
+            
+            // Validate file type
+            if (!file.type.startsWith('image/')) {
+                alert('Please upload an image file');
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                previewImage.src = e.target.result;
+                previewContainer.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        }
+        
+        // Form Submission
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // Validate webhook URL is configured
+            if (N8N_WEBHOOK_URL.includes('YOUR_N8N_INSTANCE')) {
+                showResult('error', `
+                    <h3>⚠️ Configuration Required</h3>
+                    <p>Please update the <code>N8N_WEBHOOK_URL</code> in the HTML file with your actual n8n webhook URL.</p>
+                `);
+                return;
+            }
+            
+            // Get form data
+            const file = fileInput.files[0];
+            if (!file) {
+                alert('Please select an image');
+                return;
+            }
+            
+            const businessName = document.getElementById('businessName').value.trim();
+            const businessDescription = document.getElementById('businessDescription').value.trim();
+            const videoIdea = document.getElementById('videoIdea').value.trim();
+            
+            if (!businessName || !businessDescription) {
+                alert('Please fill in all required fields');
+                return;
+            }
+            
+            // Convert image to base64
+            const base64Image = await fileToBase64(file);
+            
+            // Show loading state
+            form.style.display = 'none';
+            loading.style.display = 'block';
+            result.style.display = 'none';
+            submitBtn.disabled = true;
+            
+            try {
+                // Send to n8n webhook
+                const response = await fetch(N8N_WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        product_image: base64Image,
+                        business_name: businessName,
+                        business_description: businessDescription,
+                        video_idea: videoIdea || 'Create a professional video with compelling camera movement'
+                    })
+                });
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`Server error: ${response.status} - ${errorText}`);
+                }
+                
+                const data = await response.json();
+                
+                // Show success
+                if (data.success && data.videoUrl) {
+                    showResult('success', `
+                        <h3>✅ Video Generated Successfully!</h3>
+                        <p>Your Hollywood-style VFX video is ready for <strong>${businessName}</strong>.</p>
+                        <p style="font-size: 13px; color: #666; margin-top: 10px;">Task ID: ${data.taskId || 'N/A'}</p>
+                        <a href="${data.videoUrl}" target="_blank" class="video-link" download>
+                            📥 Download Your Video
+                        </a>
+                        <p style="margin-top: 15px; font-size: 13px; color: #666;">
+                            Right-click the link above to save the video to your device.
+                        </p>
+                    `);
+                } else {
+                    throw new Error('Video generation completed but no URL received');
+                }
+                
+            } catch (error) {
+                console.error('Error:', error);
+                showResult('error', `
+                    <h3>❌ Generation Failed</h3>
+                    <p><strong>Error:</strong> ${error.message}</p>
+                    <p style="margin-top: 10px;">Possible reasons:</p>
+                    <ul style="margin-left: 20px; margin-top: 5px;">
+                        <li>Webhook URL is incorrect</li>
+                        <li>n8n workflow is not activated</li>
+                        <li>API credentials are missing or invalid</li>
+                        <li>Network connection issue</li>
+                    </ul>
+                    <p style="margin-top: 10px;">Please check your n8n workflow and try again.</p>
+                `);
+            } finally {
+                loading.style.display = 'none';
+                form.style.display = 'block';
+                submitBtn.disabled = false;
+            }
+        });
+        
+        function fileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = error => reject(error);
+            });
+        }
+        
+        function showResult(type, message) {
+            result.className = `result ${type}`;
+            result.innerHTML = message;
+            result.style.display = 'block';
+            
+            // Scroll to result
+            result.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+    </script>
+</body>
+</html>
